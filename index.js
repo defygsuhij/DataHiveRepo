@@ -1,28 +1,18 @@
-function findSubstring(s, words) {
-  if (s.length === 0 || words.length === 0) return [];
-  const wordMap = new Map();
-  for (const word of words) {
-    wordMap.set(word, (wordMap.get(word) || 0) + 1);
+function minPathSum(grid) {
+  const m = grid.length;
+  const n = grid[0].length;
+  const dp = Array.from(Array(m), () => Array(n).fill(0));
+  dp[0][0] = grid[0][0];
+  for (let i = 1; i < m; i++) {
+    dp[i][0] = dp[i - 1][0] + grid[i][0];
   }
-  const wordLength = words[0].length;
-  const totalLength = words.length * wordLength;
-  const result = [];
-  for (let i = 0; i <= s.length - totalLength; i++) {
-    const substring = s.substring(i, i + totalLength);
-    if (isValid(substring, new Map(wordMap))) {
-      result.push(i);
+  for (let j = 1; j < n; j++) {
+    dp[0][j] = dp[0][j - 1] + grid[0][j];
+  }
+  for (let i = 1; i < m; i++) {
+    for (let j = 1; j < n; j++) {
+      dp[i][j] = grid[i][j] + Math.min(dp[i - 1][j], dp[i][j - 1]);
     }
   }
-  return result;
-  function isValid(substring, wordMap) {
-    const wordCount = new Map();
-    for (let i = 0; i < substring.length; i += wordLength) {
-      const word = substring.substring(i, i + wordLength);
-      wordCount.set(word, (wordCount.get(word) || 0) + 1);
-    }
-    for (const [key, value] of wordMap) {
-      if ((wordCount.get(key) || 0) !== value) return false;
-    }
-    return true;
-  }
+  return dp[m - 1][n - 1];
 }
